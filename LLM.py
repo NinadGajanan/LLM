@@ -165,14 +165,14 @@ def HorseshoeVortex(l, U_wake, vor_fil, blade_seg, Omega, r_R, Gamma, Nb, chord_
                 # left side of the trailing vortex
                 x = [U_wake*dt*(i+1), U_wake*dt*i]
                 y = [r_R[j]*b*np.cos(Omega*dt*(i+1)), r_R[j]*b*np.cos(Omega*dt*i)]
-                z = [(-1)*r_R[j]*b*np.sin(Omega*dt*(i+1)), (-1)*r_R[j]*b*np.sin(Omega*dt*i)]
+                z = [(1)*r_R[j]*b*np.sin(Omega*dt*(i+1)), (1)*r_R[j]*b*np.sin(Omega*dt*i)]
 
                 TR_left['VF'+str(vor_fil-i)] = {'pos1': [x[0], y[0], z[0]], 'pos2':TR_left['VF'+str((vor_fil+1)-i)]['pos1'], 'Gamma': Gamma[j]}
 
                 # right side of the trailing vortex
                 x = [U_wake*dt*(i+1), U_wake*dt*i]
                 y = [r_R[j+1]*b*np.cos(Omega*dt*(i+1)), r_R[j+1]*b*np.cos(Omega*dt*i)]
-                z = [(-1)*r_R[j+1]*b*np.sin(Omega*dt*(i+1)), (-1)*r_R[j+1]*b*np.sin(Omega*dt*i)]
+                z = [(1)*r_R[j+1]*b*np.sin(Omega*dt*(i+1)), (1)*r_R[j+1]*b*np.sin(Omega*dt*i)]
 
                 TR_right['VF'+str((vor_fil+2)+i)] = {'pos1': TR_right['VF'+str((vor_fil+1)+i)]['pos2'], 'pos2':[x[0], y[0], z[0]], 'Gamma': Gamma[j]}
             
@@ -349,7 +349,7 @@ def LiftingLineModel(HS_vortex, CtrlPts, polar_alfa, polar_cl, polar_cd, Vinf, O
             # print("--------------TEST-------------", np.array([u_ind, v_ind, w_ind]), iter)
 
             # Ensure the azimuthal direction matches the BEM convention
-            azim_vec = -np.cross([1/r_cp[i],0,0],[xp, yp, zp])
+            azim_vec = np.cross([1/r_cp[i],0,0],[xp, yp, zp])
 
             # Finding the local velocity components at the control points
             V_ax_local = Vinf + u_ind   
