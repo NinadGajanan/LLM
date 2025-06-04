@@ -348,7 +348,8 @@ def LiftingLineModel(HS_vortex, CtrlPts, polar_alfa, polar_cl, polar_cd, Vinf, O
 
             # print("--------------TEST-------------", np.array([u_ind, v_ind, w_ind]), iter)
 
-            azim_vec = np.cross([1/r_cp[i],0,0],[xp, yp, zp])
+            # Ensure the azimuthal direction matches the BEM convention
+            azim_vec = -np.cross([1/r_cp[i],0,0],[xp, yp, zp])
 
             # Finding the local velocity components at the control points
             V_ax_local = Vinf + u_ind   
@@ -391,7 +392,8 @@ def LiftingLineModel(HS_vortex, CtrlPts, polar_alfa, polar_cl, polar_cd, Vinf, O
         if error>conv and iter<=max_iter:
             print(gamma, iter)
             gamma = (gamma_new*relax) + ((1-relax)*gamma)
-            HS_vortex = HorseshoeVortex(l, (Vinf*(1+a_avg)), vor_fil, N_cp, -Omega, r_R, np.ones(N_cp), Nb, chord_dist, twist_dist)
+            # Regenerate the wake using the same convection speed assumed in BEM
+            HS_vortex = HorseshoeVortex(l, U_wake, vor_fil, N_cp, Omega, r_R, np.ones(N_cp), Nb, chord_dist, twist_dist)
             u_infl, v_infl, w_infl = InfluenceCoeff(HS_vortex, CtrlPts, vor_fil, Nb)
             iter += 1
         else:
@@ -480,7 +482,7 @@ CtrlPts, HS_vortex, results = [[] for i in range(3)]
 
 for i in range(len(U_wake)):
     CtrlPts.append(ControlPoint(r_R, b, blade_seg, chord_dist, np.deg2rad(twist_dist)))
-    HS_vortex.append(HorseshoeVortex(l, U_wake[i], vor_fil, blade_seg, -Omega[i], r_R, np.ones(blade_seg), Nb, (chord_dist*b), np.deg2rad(twist_dist)))
+    HS_vortex.append(HorseshoeVortex(l, U_wake[i], vor_fil, blade_seg, Omega[i], r_R, np.ones(blade_seg), Nb, (chord_dist*b), np.deg2rad(twist_dist)))
     results.append(LiftingLineModel(HS_vortex[i], CtrlPts[i], polar_alfa, polar_cl, polar_cd, Vinf, Omega[i], rho, b, r_R, chord_dist, twist_dist, Nb, l, U_wake[i], vor_fil, Gamma[i]))
 
 
@@ -728,4 +730,4 @@ print(f"LLM: {results[0]['CP']:.4f}")
 # plt.legend()
 # plt.tight_layout()
 # plt.show()
-# print("Discussion: (Explain how increasing wake length affects the solution, typically it converges after a certain length as the influence diminishes. Also discuss the convergence of the solution with wake length.)")
+# print("Discussion: (Explain how increasing wake length affects the solution, typically it converges after a certain length as the influence diminishes. Also discuss the convergence of the solution with wake length.)")
